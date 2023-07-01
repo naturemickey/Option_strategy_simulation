@@ -99,6 +99,21 @@ public class Account {
         }
     }
 
+    public boolean 评估风险if加仓(OptionDate today, Contract... contracts) {
+        double 总保证金 = this.总保证金(today.getDate());
+        double money = this.money + this.总浮盈(today.getDate());
+
+        for (Contract contract : contracts) {
+            总保证金 += contract.保证金(today.getDate());
+            money += contract.权利金剩余价值(today.getDate());
+        }
+
+        if (总保证金 / money > 0.9D) {
+            return false; // 有风险
+        }
+        return true; // 无风险
+    }
+
     public void forEachContract(Consumer<Contract> contractConsumer) {
         new ArrayList<>(this.认购权力合约s).forEach(contractConsumer);
         new ArrayList<>(this.认购义务合约s).forEach(contractConsumer);
