@@ -11,6 +11,7 @@ import static util.CalculateUtil.calculateσ;
 
 public class TwoWayQuoteMonth {
 
+    private OptionDate expirationDate;
     private static Map<Date, TwoWayQuoteMonth> quotes = new HashMap<>();
 
     static {
@@ -29,7 +30,9 @@ public class TwoWayQuoteMonth {
         return quotes.get(optionDate.getDate());
     }
 
-    private OptionDate expirationDate;
+    public OptionDate getExpirationDate() {
+        return expirationDate;
+    }
 
     private TwoWayQuoteMonth(OptionDate expirationDate) {
         this.expirationDate = expirationDate;
