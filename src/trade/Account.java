@@ -151,22 +151,26 @@ public class Account {
     public Contract getAny认购权力合约() {
         if (this.认购权力合约s.isEmpty())
             return null;
-        return this.认购权力合约s.get(0);
+        return this.认购权力合约s.get(this.认购权力合约s.size() - 1);
+//        return this.认购权力合约s.get(0);
     }
     public Contract getAny认购义务合约() {
         if (this.认购义务合约s.isEmpty())
             return null;
-        return this.认购义务合约s.get(0);
+        return this.认购义务合约s.get(this.认购义务合约s.size() - 1);
+//        return this.认购义务合约s.get(0);
     }
     public Contract getAny认沽权力合约() {
         if (this.认沽权力合约s.isEmpty())
             return null;
-        return this.认沽权力合约s.get(0);
+        return this.认沽权力合约s.get(this.认沽权力合约s.size() - 1);
+//        return this.认沽权力合约s.get(0);
     }
     public Contract getAny认沽义务合约() {
         if (this.认沽义务合约s.isEmpty())
             return null;
-        return this.认沽义务合约s.get(0);
+        return this.认沽义务合约s.get(this.认沽义务合约s.size() - 1);
+//        return this.认沽义务合约s.get(0);
     }
 
     public static class RiskException extends Exception {

@@ -22,13 +22,18 @@ public class 交易策略2 {
 
     private Account account;
     private double 平值的scope;
+    private double 下月是本月的多少倍; //
 
-    public 交易策略2(double money, double 平值的scope) {
+    public 交易策略2(double money, double 平值的scope, double 下月是本月的多少倍) {
         this.account = new Account(money);
         this.平值的scope = 平值的scope;
+        this.下月是本月的多少倍 = 下月是本月的多少倍;
     }
 
     public void 交易(OptionDate today) {
+        if (today.toString().equals("2018-02-08")) {
+            System.out.println();
+        }
         this.风险检查(today);
         this.行权日处理(today);
         this.调仓(today);
@@ -79,12 +84,17 @@ public class 交易策略2 {
 
         HistoryData data = HistoryDataUtil.上证50历史数据(today.getDate());
         double S = (data.get最高价() + data.get最低价()) / 2; // 当前市场价
+        // TODO 下面这两个if有点儿门道
         if (S > c1.行权价() + 0.05 - 平值的scope) {
             重构所有认购义务合约(today);
         }
         if (S < c2.行权价() - 0.05 + 平值的scope) {
             重构所有认沽义务合约(today);
         }
+//        if (S > c1.行权价() + 0.05 - 平值的scope || S < c2.行权价() - 0.05 + 平值的scope) {
+//            重构所有认购义务合约(today);
+//            重构所有认沽义务合约(today);
+//        }
     }
 
     private void 重构所有认沽义务合约(OptionDate today) {
@@ -99,7 +109,7 @@ public class 交易策略2 {
         TwoWayQuoteMonth.R 义务沽1 = quote1.getP(0, today.getDate());
 
         Contract contract;
-        if (义务沽1.权力金() >= 义务沽.权力金() * 2) { // 下个月的合约更划算的情况下
+        if (是否搞下月的更好(义务沽1.权力金(), 义务沽.权力金())) { // 下个月的合约更划算的情况下
             contract = new Contract(quote1, 义务沽1.行权价(), 义务沽1.权力金(), false, false);
         } else {
             contract = new Contract(quote, 义务沽.行权价(), 义务沽.权力金(), false, false);
@@ -127,7 +137,7 @@ public class 交易策略2 {
         TwoWayQuoteMonth.R 义务购1 = quote1.getC(0, today.getDate());
 
         Contract contract;
-        if (义务购1.权力金() >= 义务购.权力金() * 2) { // 下个月的合约更划算的情况下
+        if (是否搞下月的更好(义务购1.权力金(), 义务购.权力金())) { // 下个月的合约更划算的情况下
             contract = new Contract(quote1, 义务购1.行权价(), 义务购1.权力金(), true, false);
         } else {
             contract = new Contract(quote, 义务购.行权价(), 义务购.权力金(), true, false);
@@ -169,11 +179,11 @@ public class 交易策略2 {
         TwoWayQuoteMonth.R 义务购1 = quote1.getC(0, today.getDate());
         TwoWayQuoteMonth.R 义务沽1 = quote1.getP(0, today.getDate());
 
-        if (义务购1.权力金() >= c1.权利金() * 2) {
+        if (是否搞下月的更好(义务购1.权力金(), c1.权利金())) {
             this.重构所有认购义务合约(today);
         }
 
-        if (义务沽1.权力金() >= c2.权利金() * 2) {
+        if (是否搞下月的更好(义务沽1.权力金(), c2.权利金())) {
             this.重构所有认沽义务合约(today);
         }
     }
@@ -194,9 +204,9 @@ public class 交易策略2 {
             TwoWayQuoteMonth.R 义务沽 = quote.getP(0, today.getDate());
             TwoWayQuoteMonth.R 义务沽1 = quote1.getP(0, today.getDate());
 
-            if (义务沽1.权力金() >= 义务沽.权力金() * 2 || 义务购1.权力金() >= 义务购.权力金() * 2) {
-                c1 = new Contract(quote, 义务购1.行权价(), 义务购1.权力金(), true, false);
-                c2 = new Contract(quote, 义务沽1.行权价(), 义务沽1.权力金(), false, false);
+            if (是否搞下月的更好(义务沽1.权力金(), 义务沽.权力金()) || 是否搞下月的更好(义务购1.权力金(), 义务购.权力金())) {
+                c1 = new Contract(quote1, 义务购1.行权价(), 义务购1.权力金(), true, false);
+                c2 = new Contract(quote1, 义务沽1.行权价(), 义务沽1.权力金(), false, false);
             } else {
                 c1 = new Contract(quote, 义务购.行权价(), 义务购.权力金(), true, false);
                 c2 = new Contract(quote, 义务沽.行权价(), 义务沽.权力金(), false, false);
@@ -214,9 +224,12 @@ public class 交易策略2 {
         }
     }
 
+    private boolean 是否搞下月的更好(double 下月的权利金, double 本月的权利金) {
+        return 下月的权利金 >= 本月的权利金 * 下月是本月的多少倍;
+    }
 
     public static void main(String[] args) {
-        交易策略2 a = new 交易策略2(50, 0.025);
+        交易策略2 a = new 交易策略2(10, 0.025, 1.25);
 
         double d = -1;
         for (OptionDate optionDate : OptionCalendar.getInstance().getDates()) {

@@ -1,6 +1,22 @@
 package util;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 public class CalculateUtil {
+
+    private static record CalculateKey(double X, double S, long t, double r, double σ) {
+    }
+
+    private static record 保证金Key(double 合约最新成交价, double 合约标的最新价, double 行权价, int 合约单位) {
+    }
+
+    private static Map<CalculateKey, Double> calculateKeyDoubleMapC = new HashMap<>();
+    private static Map<CalculateKey, Double> calculateKeyDoubleMapP = new HashMap<>();
+    private static Map<保证金Key, Double> 保证金购Map = new HashMap<>();
+    private static Map<保证金Key, Double> 保证金沽Map = new HashMap<>();
+
     /**
      * @param X 执行价
      * @param S 标的现价
@@ -10,20 +26,26 @@ public class CalculateUtil {
      * @return 权力金
      */
     public static double calculateC(double X, double S, long t, double r, double σ) {
-        double T = t / 365D;
-        // d1=[ln(S/X)+(r+σ^2/2)T]/(σ√T)
-        double d1 = (Math.log(S / X) + (r + (σ * σ) / 2) * T) / (σ * Math.pow(T, 0.5));
-        // d2=d1-σ√T
-        double d2 = d1 - σ * Math.pow(T, 0.5);
-        // C=S*N(d1)-X*exp(-r*T)*N(d2)
-        return S * NormSDist(d1) - X * Math.exp(-r * T) * NormSDist(d2);
+        return calculateKeyDoubleMapC.computeIfAbsent(new CalculateKey(X, S, t, r, σ),
+                calculateKey -> {
+                    double T = t / 365D;
+                    // d1=[ln(S/X)+(r+σ^2/2)T]/(σ√T)
+                    double d1 = (Math.log(S / X) + (r + (σ * σ) / 2) * T) / (σ * Math.pow(T, 0.5));
+                    // d2=d1-σ√T
+                    double d2 = d1 - σ * Math.pow(T, 0.5);
+                    // C=S*N(d1)-X*exp(-r*T)*N(d2)
+                    return S * NormSDist(d1) - X * Math.exp(-r * T) * NormSDist(d2);
+                });
     }
 
     public static double calculateP(double X, double S, long t, double r, double σ) {
-        double T = t / 365D;
-        double C = calculateC(X, S, t, r, σ);
-        // P=C+X*exp(-r*T)-S
-        return C + X * Math.exp(-r * T) - S;
+        return calculateKeyDoubleMapP.computeIfAbsent(new CalculateKey(X, S, t, r, σ),
+                calculateKey -> {
+                    double T = t / 365D;
+                    double C = calculateC(X, S, t, r, σ);
+                    // P=C+X*exp(-r*T)-S
+                    return C + X * Math.exp(-r * T) - S;
+                });
     }
 
     private static double NormSDist(double z) {
@@ -61,11 +83,13 @@ public class CalculateUtil {
     }
 
     public static double 认购期权保证金(double 合约最新成交价, double 合约标的最新价, double 行权价, int 合约单位) {
-        return (合约最新成交价 + Math.max(0.12 * 合约标的最新价 - Math.max(行权价 - 合约标的最新价, 0), 0.07 * 合约标的最新价)) * 合约单位;
+        return 保证金购Map.computeIfAbsent(new 保证金Key(合约最新成交价, 合约标的最新价, 行权价, 合约单位),
+                calculateKey -> (合约最新成交价 + Math.max(0.12 * 合约标的最新价 - Math.max(行权价 - 合约标的最新价, 0), 0.07 * 合约标的最新价)) * 合约单位);
     }
 
     public static double 认沽期权保证金(double 合约最新成交价, double 合约标的最新价, double 行权价, int 合约单位) {
-        return Math.min(合约最新成交价 + Math.max(0.12 * 合约标的最新价 - Math.max(合约标的最新价 - 行权价, 0), 0.07 * 行权价), 行权价) * 合约单位;
+        return 保证金购Map.computeIfAbsent(new 保证金Key(合约最新成交价, 合约标的最新价, 行权价, 合约单位),
+                calculateKey -> Math.min(合约最新成交价 + Math.max(0.12 * 合约标的最新价 - Math.max(合约标的最新价 - 行权价, 0), 0.07 * 行权价), 行权价) * 合约单位);
     }
 
     public static void main(String[] args) {
