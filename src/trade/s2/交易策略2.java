@@ -5,7 +5,6 @@ import t.OptionDate;
 import t.TwoWayQuoteMonth;
 import trade.Account;
 import trade.Contract;
-import trade.s1.交易策略1改;
 import util.HistoryData;
 import util.HistoryDataUtil;
 import util.NumberUtil;
@@ -22,72 +21,18 @@ import java.util.ArrayList;
 public class 交易策略2 {
 
     private Account account;
+    private double 平值的scope;
 
-    public 交易策略2(double money) {
+    public 交易策略2(double money, double 平值的scope) {
         this.account = new Account(money);
+        this.平值的scope = 平值的scope;
     }
 
     public void 交易(OptionDate today) {
-
-        if (today.toString().equals("2017-05-25")) {
-            System.out.println();
-        }
-
-        checkForDebug(today);
-
         this.风险检查(today);
-
-        checkForDebug(today);
-
         this.行权日处理(today);
-
-        checkForDebug(today);
-
         this.调仓(today);
-
-        checkForDebug(today);
-
         this.加仓(today);
-
-        checkForDebug(today);
-
-    }
-
-    private void checkForDebug(OptionDate today) {
-        Contract c1 = this.account.getAny认购义务合约();
-        Contract c2 = this.account.getAny认沽义务合约();
-
-        if (c1 == null || c2 == null) {
-            return;
-        }
-
-        if (today.toString().equals("2017-06-27")) {
-//            System.out.println();
-        }
-
-        if (c1.quote().getExpirationDate().getDate().before(today.getDate())) {
-            System.out.println("c1: " + c1.quote() + "\ttoday: " + today);
-        }
-        if (c2.quote().getExpirationDate().getDate().before(today.getDate())) {
-            System.out.println("c2: " + c1.quote() + "\ttoday: " + today);
-        }
-
-        OptionDate optionDate = null;
-        for (Contract c : this.account.get认购义务合约s()) {
-            if (optionDate == null) {
-                optionDate = c.quote().getExpirationDate();
-            } else if (!optionDate.equals(c.quote().getExpirationDate())) {
-                System.out.println("c: " + c);
-            }
-        }
-        optionDate = null;
-        for (Contract c : this.account.get认沽义务合约s()) {
-            if (optionDate == null) {
-                optionDate = c.quote().getExpirationDate();
-            } else if (!optionDate.equals(c.quote().getExpirationDate())) {
-                System.out.println("c: " + c);
-            }
-        }
     }
 
     private void 风险检查(OptionDate today) {
@@ -134,10 +79,10 @@ public class 交易策略2 {
 
         HistoryData data = HistoryDataUtil.上证50历史数据(today.getDate());
         double S = (data.get最高价() + data.get最低价()) / 2; // 当前市场价
-        if (S > c1.行权价() + 0.05 - 0.01) {
+        if (S > c1.行权价() + 0.05 - 平值的scope) {
             重构所有认购义务合约(today);
         }
-        if (S < c2.行权价() - 0.05 + 0.01) {
+        if (S < c2.行权价() - 0.05 + 平值的scope) {
             重构所有认沽义务合约(today);
         }
     }
@@ -271,7 +216,7 @@ public class 交易策略2 {
 
 
     public static void main(String[] args) {
-        交易策略2 a = new 交易策略2(10);
+        交易策略2 a = new 交易策略2(50, 0.025);
 
         double d = -1;
         for (OptionDate optionDate : OptionCalendar.getInstance().getDates()) {
