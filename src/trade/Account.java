@@ -22,7 +22,7 @@ public class Account {
 
     public void 加仓(Contract c, OptionDate today) throws RiskException {
         if (c.cp()) {
-            if (c.权力还是义务()) {
+            if (c.权利还是义务()) {
                 认购权力合约s.add(c);
                 this.money -= c.权利金();
             } else {
@@ -30,7 +30,7 @@ public class Account {
                 this.money += c.权利金();
             }
         } else {
-            if (c.权力还是义务()) {
+            if (c.权利还是义务()) {
                 认沽权力合约s.add(c);
                 this.money -= c.权利金();
             } else {
@@ -64,13 +64,13 @@ public class Account {
 
     public void 平仓(Contract c, OptionDate today) {
         if (c.cp()) {
-            if (c.权力还是义务()) {
+            if (c.权利还是义务()) {
                 认购权力合约s.remove(c);
             } else {
                 认购义务合约s.remove(c);
             }
         } else {
-            if (c.权力还是义务()) {
+            if (c.权利还是义务()) {
                 认沽权力合约s.remove(c);
             } else {
                 认沽义务合约s.remove(c);
@@ -78,7 +78,7 @@ public class Account {
         }
         this.money += c.权利金剩余价值(today.getDate());
 
-        if (c.权力还是义务()) { // 行权日的权力仓，当剩余价值大于手续费才有平仓的必要，否则等待即可。
+        if (c.权利还是义务()) { // 行权日的权力仓，当剩余价值大于手续费才有平仓的必要，否则等待即可。
             if (today.isExpirationDate()) {
                 if (c.权利金剩余价值(today.getDate()) > NumberUtil.手续费) {
                     this.money -= NumberUtil.手续费;

@@ -4,7 +4,6 @@ import t.TwoWayQuoteMonth;
 import util.CalculateUtil;
 import util.HistoryData;
 import util.HistoryDataUtil;
-import util.NumberUtil;
 
 import java.util.Date;
 import java.util.Objects;
@@ -13,7 +12,7 @@ public record Contract(
         TwoWayQuoteMonth quote,
         double 行权价, double 权利金,
         boolean cp,// true 认购；false 认沽
-        boolean 权力还是义务 // true 权力；false 义务
+        boolean 权利还是义务 // true 权力；false 义务
 ) {
     private double 当前权利金(Date today) {
         if (this.cp) {
@@ -28,7 +27,7 @@ public record Contract(
     }
 
     public double 保证金(Date today) {
-        if (this.权力还是义务) {
+        if (this.权利还是义务) {
             return 0;
         } else {
             double 合约最新成交价 = this.当前权利金(today);
@@ -44,7 +43,7 @@ public record Contract(
 
     public double 权利金剩余价值(Date today) {
         double 当前权利金 = this.当前权利金(today);
-        if (this.权力还是义务) {
+        if (this.权利还是义务) {
             // 权力仓当前的权利金，即：如果当下平仓能拿回来的钱。
             return 当前权利金;
         } else {
@@ -58,11 +57,11 @@ public record Contract(
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Contract contract = (Contract) o;
-        return Double.compare(contract.行权价, 行权价) == 0 && Double.compare(contract.权利金, 权利金) == 0 && cp == contract.cp && 权力还是义务 == contract.权力还是义务 && Objects.equals(quote, contract.quote);
+        return Double.compare(contract.行权价, 行权价) == 0 && Double.compare(contract.权利金, 权利金) == 0 && cp == contract.cp && 权利还是义务 == contract.权利还是义务 && Objects.equals(quote, contract.quote);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(quote, 行权价, 权利金, cp, 权力还是义务);
+        return Objects.hash(quote, 行权价, 权利金, cp, 权利还是义务);
     }
 }
