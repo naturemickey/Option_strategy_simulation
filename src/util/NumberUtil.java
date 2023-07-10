@@ -15,5 +15,5 @@ public class NumberUtil {
         return percentFormat.format(d);
     }
 
-    public static double 手续费 = 5D / 10000D;
+    public static final double 手续费 = 5D / 10000D;
 }
