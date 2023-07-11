@@ -38,7 +38,6 @@ public class DateUtil {
 
         c.set(Calendar.DAY_OF_WEEK, 4); // 从周日开始，第4天是周三
 
-
         HistoryData historyData = null;
         Date res = null;
         int n = 0;
@@ -82,14 +81,14 @@ public class DateUtil {
     }
 
     public static void main(String[] args) {
-        Date d = java.sql.Date.valueOf("2023-05-24");
+        Date d = java.sql.Date.valueOf("2022-05-22");
 //        Date d = new Date();
-//        System.out.println(get当月行权日(d));
-//        System.out.println(getNext行权日(d, 0));
+        System.out.println(get当月行权日(d));
+        System.out.println(getNext行权日(d, 0));
 //        System.out.println(getNext行权日(d, 1));
 //        System.out.println(distanceToNext行权日(d, 0));
 //        System.out.println(distanceToNext行权日(d, 1));
 
-        System.out.println(addDay(d, -1));
+//        System.out.println(addDay(d, -1));
     }
 }

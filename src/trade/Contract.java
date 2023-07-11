@@ -1,7 +1,9 @@
 package trade;
 
+import t.OptionDate;
 import t.TwoWayQuoteMonth;
 import util.CalculateUtil;
+import util.DateUtil;
 import util.HistoryData;
 import util.HistoryDataUtil;
 
@@ -14,6 +16,18 @@ public record Contract(
         boolean cp,// true 认购；false 认沽
         boolean 权利还是义务 // true 权力；false 义务
 ) {
+    /**
+     * @param today
+     * @return 0为本月，1为下月
+     */
+    public int 是哪个月的仓(OptionDate today) {
+        Date 当月行权日 = DateUtil.get当月行权日(today.getDate());
+        if (quote.getExpirationDate().getDate().equals(当月行权日)) {
+            return 0;
+        }
+        return 1;
+    }
+
     private double 当前权利金(Date today) {
         if (this.cp) {
             return this.quote.getC(this.行权价, today);
