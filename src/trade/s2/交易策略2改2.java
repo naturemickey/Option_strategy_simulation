@@ -105,13 +105,14 @@ public class 交易策略2改2 {
 
         HistoryData data = HistoryDataUtil.上证50历史数据(today.getDate());
         double S = (data.get最高价() + data.get最低价()) / 2; // 当前市场价
-        // TODO 下面这两个if有点儿门道
+        // TODO 下面这两个if有点儿门道（如果操作反了，就亏钱）
         if (S > c1.行权价() + 0.05 - 平值的scope) {
             重构所有认购义务合约(today);
         }
         if (S < c2.行权价() - 0.05 + 平值的scope) {
             重构所有认沽义务合约(today);
         }
+
 //        if (S > c1.行权价() + 0.05 - 平值的scope || S < c2.行权价() - 0.05 + 平值的scope) {
 //            重构所有认购义务合约(today);
 //            重构所有认沽义务合约(today);
