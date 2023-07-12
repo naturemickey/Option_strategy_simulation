@@ -20,15 +20,16 @@ public class 交易策略2改2 {
 
     private Account account;
     private double 平值的scope;
-    private double 下月是本月的多少倍; //
 
-    public 交易策略2改2(double money, double 平值的scope, double 下月是本月的多少倍) {
+    public 交易策略2改2(double money, double 平值的scope) {
         this.account = new Account(money);
         this.平值的scope = 平值的scope;
-        this.下月是本月的多少倍 = 下月是本月的多少倍;
     }
 
     public void 交易(OptionDate today) {
+        if (today.toString().equals("2022-07-08")) {
+            Object o = null;
+        }
         this.风险检查(today);
         this.行权日处理(today);
         this.调仓(today);
@@ -70,19 +71,31 @@ public class 交易策略2改2 {
         if (this.account.getAny认购义务合约() != null) {
             this.跨级调仓(today);
             // 本月直接调下月不划算
-//            this.本月凋下月(today);
+//            this.本月调下月(today);
         }
     }
 
-//    private void 本月凋下月(OptionDate today) {
+//    private void 本月调下月(OptionDate today) {
 //        Contract c1 = this.account.getAny认购义务合约();
 //        Contract c2 = this.account.getAny认沽义务合约();
 //
+//        double n = 2000000000;
+//
 //        if (c1.是哪个月的仓(today) == 0) {
-//            this.重构所有认购义务合约(today);
+//            double 权利金剩余价值 = c1.权利金剩余价值(today.getDate());
+//            double 权利金 = c1.权利金();
+//
+//            if (权利金 > -权利金剩余价值 * n) {
+//                this.重构所有认购义务合约(today);
+//            }
 //        }
 //        if (c2.是哪个月的仓(today) == 0) {
-//            this.重构所有认沽义务合约(today);
+//            double 权利金剩余价值 = c2.权利金剩余价值(today.getDate());
+//            double 权利金 = c2.权利金();
+//
+//            if (权利金 > -权利金剩余价值 * n) {
+//                this.重构所有认沽义务合约(today);
+//            }
 //        }
 //    }
 
@@ -174,7 +187,6 @@ public class 交易策略2改2 {
 
             c1 = new Contract(quote1, 义务购1.行权价(), 义务购1.权力金(), true, false);
             c2 = new Contract(quote1, 义务沽1.行权价(), 义务沽1.权力金(), false, false);
-
         }
 
         while (this.account.评估风险if加仓(today, c1, c2)) {
@@ -189,7 +201,7 @@ public class 交易策略2改2 {
     }
 
     public static void main(String[] args) {
-        交易策略2改2 a = new 交易策略2改2(5, 0.025, 1.25);
+        交易策略2改2 a = new 交易策略2改2(5, 0.015);
 
         double d = -1;
         for (OptionDate optionDate : OptionCalendar.getInstance().getDates()) {

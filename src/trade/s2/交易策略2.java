@@ -231,7 +231,7 @@ public class 交易策略2 {
     }
 
     public static void main(String[] args) {
-        交易策略2 a = new 交易策略2(5, 0.025, 1.25);
+        交易策略2 a = new 交易策略2(5, 0.015, 1.25);
 
         double d = -1;
         for (OptionDate optionDate : OptionCalendar.getInstance().getDates()) {

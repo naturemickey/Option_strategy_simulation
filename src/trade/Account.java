@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static util.NumberUtil.风险率阈值;
+
 public class Account {
     private double money; // 资金(万)
     private final List<Contract> 认购权力合约s = new ArrayList<>();
@@ -55,7 +57,7 @@ public class Account {
         return s;
     }
 
-    public double 总浮盈(Date today) {
+    public double 权利金剩余总价值(Date today) {
         return this.认购权力合约s.stream().mapToDouble(contract -> contract.权利金剩余价值(today)).sum()
                 + this.认购义务合约s.stream().mapToDouble(contract -> contract.权利金剩余价值(today)).sum()
                 + this.认沽权力合约s.stream().mapToDouble(contract -> contract.权利金剩余价值(today)).sum()
@@ -93,22 +95,24 @@ public class Account {
 
     public void 评估风险(OptionDate today) throws RiskException {
         double 总保证金 = this.总保证金(today.getDate());
-        double money = this.money + this.总浮盈(today.getDate());
-        if (总保证金 / money > 0.9D) { //
+//        double 总资产 = this.money + this.总浮盈(today.getDate());
+        double 总资产 = this.总资产(today);
+        if (总保证金 / 总资产 > 风险率阈值) { //
             throw new RiskException();
         }
     }
 
     public boolean 评估风险if加仓(OptionDate today, Contract... contracts) {
         double 总保证金 = this.总保证金(today.getDate());
-        double money = this.money + this.总浮盈(today.getDate());
+//        double money = this.money + this.总浮盈(today.getDate());
+        double 总资产 = this.总资产(today);
 
         for (Contract contract : contracts) {
             总保证金 += contract.保证金(today.getDate());
-            money += contract.权利金剩余价值(today.getDate());
+            总资产 += contract.权利金剩余价值(today.getDate());
         }
 
-        if (总保证金 / money > 0.9D) {
+        if (总保证金 / 总资产 > 风险率阈值) {
             return false; // 有风险
         }
         return true; // 无风险
@@ -122,7 +126,7 @@ public class Account {
     }
 
     public double 总资产(OptionDate today) {
-        return this.money + this.总浮盈(today.getDate());
+        return this.money + this.权利金剩余总价值(today.getDate());
     }
 
     /**
@@ -154,18 +158,21 @@ public class Account {
         return this.认购权力合约s.get(this.认购权力合约s.size() - 1);
 //        return this.认购权力合约s.get(0);
     }
+
     public Contract getAny认购义务合约() {
         if (this.认购义务合约s.isEmpty())
             return null;
         return this.认购义务合约s.get(this.认购义务合约s.size() - 1);
 //        return this.认购义务合约s.get(0);
     }
+
     public Contract getAny认沽权力合约() {
         if (this.认沽权力合约s.isEmpty())
             return null;
         return this.认沽权力合约s.get(this.认沽权力合约s.size() - 1);
 //        return this.认沽权力合约s.get(0);
     }
+
     public Contract getAny认沽义务合约() {
         if (this.认沽义务合约s.isEmpty())
             return null;

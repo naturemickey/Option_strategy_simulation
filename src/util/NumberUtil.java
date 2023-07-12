@@ -15,5 +15,6 @@ public class NumberUtil {
         return percentFormat.format(d);
     }
 
-    public static final double 手续费 = 5D / 10000D;
+    public static final double 手续费 = 5D / 10000D; // 正常是0.5元/笔交易
+    public static final double 风险率阈值 = 0.9D;
 }
