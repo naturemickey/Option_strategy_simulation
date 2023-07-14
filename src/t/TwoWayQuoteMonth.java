@@ -59,6 +59,11 @@ public class TwoWayQuoteMonth {
         return get(level, today, true);
     }
 
+    /**
+     * @param level 1为虚1级，-1为实1级
+     * @param today
+     * @return 权力金
+     */
     public R getP(int level, Date today) {
         return get(level, today, false);
     }
