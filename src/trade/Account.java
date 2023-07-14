@@ -3,10 +3,7 @@ package trade;
 import t.OptionDate;
 import util.NumberUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static util.NumberUtil.风险率阈值;
@@ -183,6 +180,16 @@ public class Account {
             return null;
         return this.认沽义务合约s.get(this.认沽义务合约s.size() - 1);
 //        return this.认沽义务合约s.get(0);
+    }
+
+    public void 行权日处理(OptionDate today) {
+        if (today.isExpirationDate()) {
+            this.forEachContract(contract -> {
+                if (contract.quote().getExpirationDate().equals(today)) {
+                    this.平仓(contract, today);
+                }
+            });
+        }
     }
 
     public static class RiskException extends Exception {

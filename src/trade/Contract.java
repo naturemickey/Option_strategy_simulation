@@ -66,6 +66,17 @@ public record Contract(
         }
     }
 
+    /**
+     *
+     * @param today
+     * @return true为实, false为虚
+     */
+    public boolean 虚实(OptionDate today) {
+        HistoryData data = HistoryDataUtil.上证50历史数据(today.getDate());
+        double S = (data.get最高价() + data.get最低价()) / 2; // 当前市场价
+        return this.cp ? this.行权价 > S : S > this.行权价;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

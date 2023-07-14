@@ -30,13 +30,22 @@ public class DateUtil {
 
         c.set(Calendar.DAY_OF_MONTH, 1); // 先设置成当月第1天
         int dow = c.get(Calendar.DAY_OF_WEEK); // 再获取到星期几
-        if (dow <= 4) { // 如果是小于星期三
-            c.set(Calendar.WEEK_OF_MONTH, 4);
+//        if (dow <= 4) { // 如果是小于星期三
+//            c.set(Calendar.WEEK_OF_MONTH, 4);
+//        } else {
+//            c.set(Calendar.WEEK_OF_MONTH, 5);
+//        }
+//
+//        c.set(Calendar.DAY_OF_WEEK, 4); // 从周日开始，第4天是周三
+        if (dow <= 4) { // 如果是 <= 星期三
+            c.add(Calendar.DATE, 4 - dow);
+//            c.set(Calendar.DAY_OF_WEEK, 4);
+            c.add(Calendar.DATE, 21);
         } else {
-            c.set(Calendar.WEEK_OF_MONTH, 5);
+            c.set(Calendar.DAY_OF_WEEK, 4);
+            c.add(Calendar.DATE, 28);
         }
 
-        c.set(Calendar.DAY_OF_WEEK, 4); // 从周日开始，第4天是周三
 
         HistoryData historyData = null;
         Date res = null;
@@ -81,7 +90,7 @@ public class DateUtil {
     }
 
     public static void main(String[] args) {
-        Date d = java.sql.Date.valueOf("2022-05-22");
+        Date d = java.sql.Date.valueOf("2017-4-25");
 //        Date d = new Date();
         System.out.println(get当月行权日(d));
         System.out.println(getNext行权日(d, 0));
