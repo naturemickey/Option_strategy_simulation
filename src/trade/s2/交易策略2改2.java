@@ -190,15 +190,7 @@ public class 交易策略2改2 {
             c2 = new Contract(quote1, 义务沽1.行权价(), 义务沽1.权力金(), false, false);
         }
 
-        while (this.account.评估风险if加仓(today, c1, c2)) {
-            try {
-                this.account.加仓(c1, today);
-                this.account.加仓(c2, today);
-            } catch (Account.RiskException riskException) {
-                // 理论上不可能到这里
-                throw new RuntimeException(riskException);
-            }
-        }
+        this.account.加仓(today, c1, c2);
     }
 
     public static void main(String[] args) {

@@ -111,6 +111,8 @@ public class Account {
         double 总资产 = this.总资产(today);
 
         for (Contract contract : contracts) {
+            contract = contract.创建新仓(today);
+
             总保证金 += contract.保证金(today.getDate());
             总资产 += contract.权利金剩余价值(today.getDate());
         }
@@ -119,6 +121,21 @@ public class Account {
             return false; // 有风险
         }
         return true; // 无风险
+    }
+
+    public void 加仓(OptionDate today, Contract... contracts) {
+        while (this.评估风险if加仓(today, contracts)) {
+            try {
+                for (int i = 0; i < contracts.length; i++) {
+                    Contract contract = contracts[i];
+
+                    this.加仓(contract, today);
+                }
+            } catch (Account.RiskException riskException) {
+                // 理论上不可能到这里
+                throw new RuntimeException(riskException);
+            }
+        }
     }
 
     public void forEachContract(Consumer<Contract> contractConsumer) {

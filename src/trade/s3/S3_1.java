@@ -23,7 +23,7 @@ public class S3_1 extends BaseStrategy {
 
 
     protected void 行权日处理(OptionDate today) {
-       // super.行权日处理(today);
+        // super.行权日处理(today);
         if (today.isExpirationDate()) {
             Contract c1 = this.account.getAny认购义务合约();
             Contract c2 = this.account.getAny认沽义务合约();
@@ -139,15 +139,7 @@ public class S3_1 extends BaseStrategy {
             c2 = new Contract(quote1, 义务沽1.行权价(), 义务沽1.权力金(), false, false);
         }
 
-        while (this.account.评估风险if加仓(today, c1, c2)) {
-            try {
-                this.account.加仓(c1, today);
-                this.account.加仓(c2, today);
-            } catch (Account.RiskException riskException) {
-                // 理论上不可能到这里
-                throw new RuntimeException(riskException);
-            }
-        }
+        this.account.加仓(today, c1, c2);
     }
 
     public static void main(String[] args) {
