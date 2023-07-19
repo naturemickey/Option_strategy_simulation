@@ -93,7 +93,7 @@ public class S221 {
         }
     }
 
-    private int x = 5;
+    private int x = 3;
 
     private void 认沽合约重构为实1级合约(OptionDate today) {
         重构所有认沽义务合约(today, 1 - x);
