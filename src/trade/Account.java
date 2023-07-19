@@ -20,6 +20,7 @@ public class Account {
     }
 
     public void 加仓(Contract c, OptionDate today) throws RiskException {
+        c = c.创建新仓(today);
         if (c.cp()) {
             if (c.权利还是义务()) {
                 认购权力合约s.add(c);

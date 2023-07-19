@@ -28,6 +28,15 @@ public record Contract(
         return 1;
     }
 
+    /**
+     * this是之前的合约，当要给合约加仓的时候，要算一下当天的权利金
+     * @param today
+     * @return
+     */
+    public Contract 创建新仓(OptionDate today) {
+        return new Contract(quote, 行权价, 当前权利金(today.getDate()), cp, 权利还是义务);
+    }
+
     private double 当前权利金(Date today) {
         if (this.cp) {
             return this.quote.getC(this.行权价, today);

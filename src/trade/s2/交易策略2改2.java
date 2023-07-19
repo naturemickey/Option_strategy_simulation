@@ -27,7 +27,7 @@ public class 交易策略2改2 {
     }
 
     public void 交易(OptionDate today) {
-        if (today.toString().equals("2022-07-08")) {
+        if (today.toString().equals("2017-02-03")) {
             Object o = null;
         }
         this.风险检查(today);
@@ -206,12 +206,13 @@ public class 交易策略2改2 {
 
         double d = -1;
         for (OptionDate optionDate : OptionCalendar.getInstance().getDates()) {
-            if (HistoryDataUtil.上证50历史数据(optionDate.getDate()) != null
+            HistoryData historyData = HistoryDataUtil.上证50历史数据(optionDate.getDate());
+            if (historyData != null
                     && TwoWayQuoteMonth.getQuote(optionDate.nextExpirationDate(0)) != null
                     && TwoWayQuoteMonth.getQuote(optionDate.nextExpirationDate(1)) != null) {
                 a.交易(optionDate);
 
-                if (optionDate.isExpirationDate()) {
+//                if (optionDate.isExpirationDate()) {
                     double 总资产 = a.account.总资产(optionDate);
 
                     // 将 double 值格式化为百分比字符串
@@ -220,7 +221,7 @@ public class 交易策略2改2 {
                     System.out.println(optionDate + "\t" + a.account.总资产(optionDate) + "\t" + percentage);
 
                     d = 总资产;
-                }
+//                }
             }
         }
     }
