@@ -117,6 +117,8 @@ public class Account {
             总资产 += contract.权利金剩余价值(today.getDate());
         }
 
+        总资产 -= contracts.length * NumberUtil.手续费;
+
         if (总保证金 / 总资产 > 风险率阈值) {
             return false; // 有风险
         }

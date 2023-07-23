@@ -92,23 +92,64 @@ public class CalculateUtil {
                 calculateKey -> Math.min(合约最新成交价 + Math.max(0.12 * 合约标的最新价 - Math.max(合约标的最新价 - 行权价, 0), 0.07 * 行权价), 行权价) * 合约单位);
     }
 
+    /**
+     * @param X 执行价
+     * @param S 标的现价
+     * @param t 期权剩余天数(天)
+     * @param r 无风险利率(10年国债利率)
+     * @param σ 波动率
+     * @return
+     */
+    public static double deltaC(double X, double S, long t, double r, double σ) {
+        double T = t / 365D;
+        double d1 = (Math.log(S / X) + (r + (σ * σ) / 2) * T) / (σ * Math.pow(T, 0.5));
+        // Delta = e^{-qT} * N(d1)
+        // q为0
+        return NormSDist(d1);
+    }
+
+    /**
+     * @param X 执行价
+     * @param S 标的现价
+     * @param t 期权剩余天数(天)
+     * @param r 无风险利率(10年国债利率)
+     * @param σ 波动率
+     * @return
+     */
+    public static double deltaP(double X, double S, long t, double r, double σ) {
+        return deltaC(X, S, t, r, σ) - 1;
+    }
+
     public static void main(String[] args) {
+        System.out.println(deltaC(2.6, 2.586, 33, 0.0267, 0.1511));
+        System.out.println(deltaP(2.6, 2.586, 33, 0.0267, 0.1511));
+
         double S = 2.5;
 
-        System.out.println(认购期权保证金(0.051525094954115946D, S, 2.55, 1));
-        System.out.println(认购期权保证金(515.25094954115946D, S, 25500, 1));
+//        System.out.println(认购期权保证金(0.051525094954115946D, S, 2.55, 1));
+//        System.out.println(认购期权保证金(515.25094954115946D, S, 25500, 1));
 //        System.out.println(认沽期权保证金(0.05943, 2.522, 2.55, 1));
 //        System.out.println(认购期权保证金(0.0300, 2.522, 2.55, 1));
 //        System.out.println(认沽期权保证金(0.0300, 2.522, 2.55, 1));
 
-        System.out.println(calculateC(2.55, S, 60, 0.027142, 0.1697));
-        System.out.println(calculateC(25500, 25000, 60, 0.027142, 0.1697));
+//        System.out.println(calculateC(2.55, S, 60, 0.027142, 0.1697));
+//        System.out.println(calculateC(25500, 25000, 60, 0.027142, 0.1697));
 //        System.out.println(calculateC(2.60, 2.525, 60, 0.027142, 0.1697));
 //        System.out.println(calculateC(2.65, 2.525, 60, 0.027142, 0.1697));
 //
 //        System.out.println(calculateC(2.55, S, 30, 0.027142, 0.1697));
 //        System.out.println(calculateC(2.60, 2.525, 30, 0.027142, 0.1697));
 //        System.out.println(calculateC(2.65, S, 30, 0.027142, 0.1697));
+
+
+//        System.out.println(6.158 - 5);
+//        System.out.println(7 - 6.158);
+//
+//        for (int t = 33; t >= 0; t--) {
+//            double c = calculateC(5, 6.158, t, 0.0267, 0.15);
+//            double p = calculateP(7, 6.158, t, 0.0267, 0.1455);
+//            System.out.println(t + "\t" + c + "\t" + p + "\t" + (c + p));
+//        }
 
         // σ = (1/N)*sqrt(Σ[(ri - r_bar)^2])
         // 2535.14	2546.17	2553.95

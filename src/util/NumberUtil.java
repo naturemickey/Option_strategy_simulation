@@ -8,7 +8,7 @@ public class NumberUtil {
 
     static {
         // 设置百分比显示的小数位数（可根据需要修改）
-        percentFormat.setMinimumFractionDigits(2);
+        percentFormat.setMinimumFractionDigits(4);
     }
 
     public static String 数字转百分比(double d) {

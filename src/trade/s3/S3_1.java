@@ -52,7 +52,7 @@ public class S3_1 extends BaseStrategy {
 
     protected void 调仓(OptionDate today) {
         if (this.account.getAny认购义务合约() != null) {
-            this.跨级调仓(today);
+//            this.跨级调仓(today);
         }
     }
 
@@ -143,7 +143,7 @@ public class S3_1 extends BaseStrategy {
     }
 
     public static void main(String[] args) {
-        S3_1 a = new S3_1(5, 1);
+        S3_1 a = new S3_1(50, 8);
         a.runSimulate();
     }
 }

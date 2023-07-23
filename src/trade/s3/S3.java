@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * 1. 以卖出宽跨式期权，两边『实值』开仓50ETF期权
  * 2. 当一边变成『虚值』的时候，把『虚值』的那一边的所有合约清空，加仓『实值』期权。
  * 3. 风险值超过90%就平一点，可以加就加一点。
- *
+ * <p>
  * 注：
  * 1. 所有加仓（或开仓）都是开『下月』的期权。
  * 2. 所有开仓『实值』或『虚值』都是指『平值』期权相邻的合约（+-0.05）
@@ -33,7 +33,7 @@ public class S3 extends BaseStrategy {
 
 
     protected void 行权日处理(OptionDate today) {
-       // super.行权日处理(today);
+        // super.行权日处理(today);
         if (today.isExpirationDate()) {
             Contract c1 = this.account.getAny认购义务合约();
             Contract c2 = this.account.getAny认沽义务合约();
@@ -60,9 +60,10 @@ public class S3 extends BaseStrategy {
         this.account.平仓(c2, today);
     }
 
+    @Override
     protected void 调仓(OptionDate today) {
         if (this.account.getAny认购义务合约() != null) {
-            this.跨级调仓(today);
+//            this.跨级调仓(today);
         }
     }
 
@@ -161,7 +162,7 @@ public class S3 extends BaseStrategy {
     }
 
     public static void main(String[] args) {
-        S3 a = new S3(50, -1);
+        S3 a = new S3(50, -8);
         a.runSimulate();
     }
 }

@@ -30,11 +30,16 @@ public record Contract(
 
     /**
      * this是之前的合约，当要给合约加仓的时候，要算一下当天的权利金
+     *
      * @param today
      * @return
      */
     public Contract 创建新仓(OptionDate today) {
-        return new Contract(quote, 行权价, 当前权利金(today.getDate()), cp, 权利还是义务);
+        double 当前权利金 = 当前权利金(today.getDate());
+        if (当前权利金 != this.权利金)
+            return new Contract(quote, 行权价, 当前权利金, cp, 权利还是义务);
+        else
+            return this;
     }
 
     private double 当前权利金(Date today) {
@@ -76,7 +81,6 @@ public record Contract(
     }
 
     /**
-     *
      * @param today
      * @return true为实, false为虚
      */
