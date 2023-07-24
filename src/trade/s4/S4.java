@@ -50,7 +50,7 @@ public class S4 extends BaseStrategy {
         while (true) {
             double delta = this.account.delta(today.getDate());
             try {
-                if (delta < 0) {
+                if (delta > 0) {
                     this.account.加仓_认购义务(today, 1, 0);
                 } else {
                     this.account.加仓_认沽义务(today, 1, 0);
