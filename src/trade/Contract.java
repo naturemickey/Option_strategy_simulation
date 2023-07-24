@@ -16,6 +16,24 @@ public record Contract(
         boolean cp,// true 认购；false 认沽
         boolean 权利还是义务 // true 权力；false 义务
 ) {
+    public double delta(Date today) {
+        var t = DateUtil.distance(today, quote.getExpirationDate().getDate());
+        Double r = HistoryDataUtil._10年期国债收益率(today);
+        double σ = CalculateUtil.calculateσ(0, 0, t);
+        double delta;
+        if (this.cp) {
+            delta = CalculateUtil.deltaC(this.行权价, this.当前市场价(today), t, r, σ);
+        } else {
+            delta = CalculateUtil.deltaP(this.行权价, this.当前市场价(today), t, r, σ);
+        }
+
+        if (this.权利还是义务) {
+            return delta;
+        } else {
+            return -delta;
+        }
+    }
+
     /**
      * @param today
      * @return 0为本月，1为下月
@@ -49,7 +67,7 @@ public record Contract(
         return this.quote.getP(this.行权价, today);
     }
 
-    private double 当前市场价(Date today) {
+    public double 当前市场价(Date today) {
         HistoryData historyData = HistoryDataUtil.上证50历史数据(today);
         return (historyData.get最高价() + historyData.get最低价()) / 2;
     }
@@ -85,8 +103,7 @@ public record Contract(
      * @return true为实, false为虚
      */
     public boolean 虚实(OptionDate today) {
-        HistoryData data = HistoryDataUtil.上证50历史数据(today.getDate());
-        double S = (data.get最高价() + data.get最低价()) / 2; // 当前市场价
+        double S = 当前市场价(today.getDate());
         return this.cp ? this.行权价 > S : S > this.行权价;
     }
 

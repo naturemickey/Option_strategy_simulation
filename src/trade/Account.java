@@ -1,6 +1,7 @@
 package trade;
 
 import t.OptionDate;
+import t.TwoWayQuoteMonth;
 import util.NumberUtil;
 
 import java.util.*;
@@ -17,6 +18,53 @@ public class Account {
 
     public Account(double money) {
         this.money = money;
+    }
+
+    /**
+     * @param today
+     * @param next  0 为当月，1 为下月
+     * @param level 0 为平值，1 为虚 1 级，-1 为实 1 级。
+     * @return
+     */
+    public void 加仓_认购权力(OptionDate today, int next, int level) throws RiskException {
+        加仓_internal(today, next, level, true, true);
+    }
+
+    /**
+     * @param today
+     * @param next  0 为当月，1 为下月
+     * @param level 0 为平值，1 为虚 1 级，-1 为实 1 级。
+     * @return
+     */
+    public void 加仓_认购义务(OptionDate today, int next, int level) throws RiskException {
+        加仓_internal(today, next, level, true, false);
+    }
+
+    /**
+     * @param today
+     * @param next  0 为当月，1 为下月
+     * @param level 0 为平值，1 为虚 1 级，-1 为实 1 级。
+     * @return
+     */
+    public void 加仓_认沽权力(OptionDate today, int next, int level) throws RiskException {
+        加仓_internal(today, next, level, false, true);
+    }
+
+    /**
+     * @param today
+     * @param next  0 为当月，1 为下月
+     * @param level 0 为平值，1 为虚 1 级，-1 为实 1 级。
+     * @return
+     */
+    public void 加仓_认沽义务(OptionDate today, int next, int level) throws RiskException {
+        加仓_internal(today, next, level, false, false);
+    }
+
+    private void 加仓_internal(OptionDate today, int next, int level, boolean cp, boolean 权利还是义务) throws RiskException {
+        TwoWayQuoteMonth quote = TwoWayQuoteMonth.getQuote(today.nextExpirationDate(next)); // 下月
+        TwoWayQuoteMonth.R r = quote.getC(level, today.getDate());
+        Contract c = new Contract(quote, r.行权价(), r.权力金(), cp, 权利还是义务);
+        加仓(c, today);
     }
 
     public void 加仓(Contract c, OptionDate today) throws RiskException {
@@ -42,6 +90,13 @@ public class Account {
         this.money -= NumberUtil.手续费;
 
         评估风险(today);
+    }
+
+    public double delta(Date today) {
+        return this.认购权力合约s.stream().mapToDouble(contract -> contract.delta(today)).sum()
+                + this.认购义务合约s.stream().mapToDouble(contract -> contract.delta(today)).sum()
+                + this.认沽权力合约s.stream().mapToDouble(contract -> contract.delta(today)).sum()
+                + this.认沽义务合约s.stream().mapToDouble(contract -> contract.delta(today)).sum();
     }
 
     public double 总保证金(Date today) {
@@ -97,10 +152,13 @@ public class Account {
     }
 
     public void 评估风险(OptionDate today) throws RiskException {
-        double 总保证金 = this.总保证金(today.getDate());
-//        double 总资产 = this.money + this.总浮盈(today.getDate());
-        double 总资产 = this.总资产(today);
-        if (总保证金 / 总资产 > 风险率阈值) { //
+//        double 总保证金 = this.总保证金(today.getDate());
+////        double 总资产 = this.money + this.总浮盈(today.getDate());
+//        double 总资产 = this.总资产(today);
+//        if (总保证金 / 总资产 > 风险率阈值) { //
+//            throw new RiskException();
+//        }
+        if (!this.评估风险if加仓(today)) {
             throw new RiskException();
         }
     }

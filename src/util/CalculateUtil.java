@@ -14,6 +14,7 @@ public class CalculateUtil {
 
     private static Map<CalculateKey, Double> calculateKeyDoubleMapC = new HashMap<>();
     private static Map<CalculateKey, Double> calculateKeyDoubleMapP = new HashMap<>();
+    private static Map<CalculateKey, Double> deltaCMap = new HashMap<>();
     private static Map<保证金Key, Double> 保证金购Map = new HashMap<>();
     private static Map<保证金Key, Double> 保证金沽Map = new HashMap<>();
 
@@ -101,11 +102,13 @@ public class CalculateUtil {
      * @return
      */
     public static double deltaC(double X, double S, long t, double r, double σ) {
-        double T = t / 365D;
-        double d1 = (Math.log(S / X) + (r + (σ * σ) / 2) * T) / (σ * Math.pow(T, 0.5));
-        // Delta = e^{-qT} * N(d1)
-        // q为0
-        return NormSDist(d1);
+        return deltaCMap.computeIfAbsent(new CalculateKey(X, S, t, r, σ), key -> {
+            double T = t / 365D;
+            double d1 = (Math.log(S / X) + (r + (σ * σ) / 2) * T) / (σ * Math.pow(T, 0.5));
+            // Delta = e^{-qT} * N(d1)
+            // q为0
+            return NormSDist(d1);
+        });
     }
 
     /**
@@ -121,8 +124,8 @@ public class CalculateUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(deltaC(2.6, 2.586, 33, 0.0267, 0.1511));
-        System.out.println(deltaP(2.6, 2.586, 33, 0.0267, 0.1511));
+        System.out.println(deltaC(2.6, 2.586, 33, 0.0267, 0.16));
+        System.out.println(deltaP(2.6, 2.586, 33, 0.0267, 0.16));
 
         double S = 2.5;
 
