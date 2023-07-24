@@ -69,27 +69,31 @@ public class Account {
 
     public void 加仓(Contract c, OptionDate today) throws RiskException {
         c = c.创建新仓(today);
-        if (c.cp()) {
-            if (c.权利还是义务()) {
-                认购权力合约s.add(c);
-                this.money -= c.权利金();
+        if (this.评估风险if加仓(today, c)) {
+            if (c.cp()) {
+                if (c.权利还是义务()) {
+                    认购权力合约s.add(c);
+                    this.money -= c.权利金();
+                } else {
+                    认购义务合约s.add(c);
+                    this.money += c.权利金();
+                }
             } else {
-                认购义务合约s.add(c);
-                this.money += c.权利金();
+                if (c.权利还是义务()) {
+                    认沽权力合约s.add(c);
+                    this.money -= c.权利金();
+                } else {
+                    认沽义务合约s.add(c);
+                    this.money += c.权利金();
+                }
             }
+
+            this.money -= NumberUtil.手续费;
+
+            评估风险(today);
         } else {
-            if (c.权利还是义务()) {
-                认沽权力合约s.add(c);
-                this.money -= c.权利金();
-            } else {
-                认沽义务合约s.add(c);
-                this.money += c.权利金();
-            }
+            throw new RiskException();
         }
-
-        this.money -= NumberUtil.手续费;
-
-        评估风险(today);
     }
 
     public double delta(Date today) {

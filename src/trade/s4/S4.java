@@ -1,6 +1,7 @@
 package trade.s4;
 
 import t.OptionDate;
+import trade.Account;
 import trade.BaseStrategy;
 import trade.Contract;
 
@@ -46,12 +47,38 @@ public class S4 extends BaseStrategy {
 
     @Override
     protected void 加仓(OptionDate today) {
-
+        while (true) {
+            double delta = this.account.delta(today.getDate());
+            try {
+                if (delta < 0) {
+                    this.account.加仓_认购义务(today, 1, 0);
+                } else {
+                    this.account.加仓_认沽义务(today, 1, 0);
+                }
+            } catch (Account.RiskException e) {
+                return;
+            }
+        }
     }
 
     @Override
     protected void 调仓(OptionDate today) {
-        // todo
+        double delta = this.account.delta(today.getDate());
+        double 总资产 = this.account.总资产(today);
+
+        if (Math.abs(delta / 总资产) > 0.01) {
+            加仓(today);
+            调仓_internal(today, delta < 0);
+        }
+    }
+
+    private void 调仓_internal(OptionDate today, boolean gl) {
+        平仓一组期权(today);
+
+        double delta = this.account.delta(today.getDate());
+        if ((delta < 0) == gl) {
+            调仓_internal(today, gl);
+        }
     }
 
     public static void main(String[] args) {
