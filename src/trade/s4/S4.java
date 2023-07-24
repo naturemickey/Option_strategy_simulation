@@ -91,13 +91,23 @@ public class S4 extends BaseStrategy {
     @Override
     protected void 调仓(OptionDate today) {
         double delta = this.account.delta(today.getDate());
-        double 总资产 = this.account.总资产(today);
+        double 总资产 = this.account.总资产(today) * 10000;
 
-        if (Math.abs(delta / 总资产) > 0.01) {
-            加仓(today);
-            调仓_internal(today);
-        }
+        // 这里实验出来的结果是：尽可能的保持平衡。
+//        if (Math.abs(delta / 总资产) > 0.0000000001) {
+//            加仓(today);
+//            调仓_internal(today);
+//            a++;
+//        } else {
+//            System.out.print("");
+//            b++;
+//        }
+
+        加仓(today);
+        调仓_internal(today);
     }
+
+    int a, b;
 
     private void 调仓_internal(OptionDate today) {
         平仓一组期权(today);
@@ -112,5 +122,8 @@ public class S4 extends BaseStrategy {
     public static void main(String[] args) {
         var s4 = new S4(10);
         s4.runSimulate();
+
+        System.out.println(s4.a);
+        System.out.println(s4.b);
     }
 }
