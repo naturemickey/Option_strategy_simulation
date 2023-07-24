@@ -28,7 +28,7 @@ public class S4 extends BaseStrategy {
                     c = 认购义务合约;
                 }
             }
-        } else {
+        } else if (delta > 0) {
             // 平认沽
             for (Contract 认沽义务合约 : this.account.get认沽义务合约s()) {
                 if (c == null) {
@@ -41,6 +41,33 @@ public class S4 extends BaseStrategy {
                     c = 认沽义务合约;
                 }
             }
+        } else {
+            // **这个分支是delta恰好为0，理论上存在，实际上不太可能达到**
+            if (this.account.get认购义务合约s().size() > 0) {
+                for (Contract 认购义务合约 : this.account.get认购义务合约s()) {
+                    if (c == null) {
+                        c = 认购义务合约;
+                        continue;
+                    }
+                    double m = Math.abs(认购义务合约.delta(today.getDate()) - delta);
+                    if (minm > m) {
+                        minm = m;
+                        c = 认购义务合约;
+                    }
+                }
+            } else if (this.account.get认沽义务合约s().size() > 0) {
+                for (Contract 认沽义务合约 : this.account.get认沽义务合约s()) {
+                    if (c == null) {
+                        c = 认沽义务合约;
+                        continue;
+                    }
+                    double m = Math.abs(认沽义务合约.delta(today.getDate()) - delta);
+                    if (minm > m) {
+                        minm = m;
+                        c = 认沽义务合约;
+                    }
+                }
+            }
         }
         this.account.平仓(c, today);
     }
@@ -51,9 +78,9 @@ public class S4 extends BaseStrategy {
             double delta = this.account.delta(today.getDate());
             try {
                 if (delta > 0) {
-                    this.account.加仓_认购义务(today, 1, 0);
+                    this.account.加仓_认购义务(today, 0, 0);
                 } else {
-                    this.account.加仓_认沽义务(today, 1, 0);
+                    this.account.加仓_认沽义务(today, 0, 0);
                 }
             } catch (Account.RiskException e) {
                 return;
@@ -68,16 +95,17 @@ public class S4 extends BaseStrategy {
 
         if (Math.abs(delta / 总资产) > 0.01) {
             加仓(today);
-            调仓_internal(today, delta < 0);
+            调仓_internal(today);
         }
     }
 
-    private void 调仓_internal(OptionDate today, boolean gl) {
+    private void 调仓_internal(OptionDate today) {
         平仓一组期权(today);
 
         double delta = this.account.delta(today.getDate());
-        if ((delta < 0) == gl) {
-            调仓_internal(today, gl);
+
+        if (delta < -0.5 || delta > 0.5) {
+            调仓_internal(today);
         }
     }
 
