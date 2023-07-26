@@ -114,7 +114,7 @@ public class S4 extends BaseStrategy {
 
         double delta = this.account.delta(today.getDate());
 
-        if (delta < -0.5 || delta > 0.5) {
+        if (delta < -1 || delta > 1) {
             调仓_internal(today);
         }
     }
