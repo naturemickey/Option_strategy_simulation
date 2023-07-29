@@ -169,7 +169,6 @@ public class Account {
 
     public boolean 评估风险if加仓(OptionDate today, Contract... contracts) {
         double 总保证金 = this.总保证金(today.getDate());
-//        double money = this.money + this.总浮盈(today.getDate());
         double 总资产 = this.总资产(today);
 
         for (Contract contract : contracts) {
@@ -185,6 +184,17 @@ public class Account {
             return false; // 有风险
         }
         return true; // 无风险
+    }
+
+    public boolean addMoney(OptionDate today, double money) {
+        double 总保证金 = this.总保证金(today.getDate());
+        double 总资产 = this.总资产(today) + money;
+
+        if (总保证金 / 总资产 > 风险率阈值) {
+            return false; // 有风险，加钱失败
+        }
+        this.money += money;
+        return true; // 加钱成功
     }
 
     public void 加仓(OptionDate today, Contract... contracts) {

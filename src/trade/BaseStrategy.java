@@ -14,13 +14,16 @@ public abstract class BaseStrategy {
     }
 
     public void 交易(OptionDate today) {
-        if (today.toString().equals("2017-01-09")) {
-            System.out.print("");
-        }
         this.风险检查(today);
         this.行权日处理(today);
         this.调仓(today);
         this.加仓(today);
+    }
+
+    public void addMoney(OptionDate today, double money) {
+        while (!this.account.addMoney(today, money)) {
+            this.平仓一组期权(today);
+        }
     }
 
     public void 风险检查(OptionDate today) {
@@ -42,6 +45,10 @@ public abstract class BaseStrategy {
 
     protected abstract void 调仓(OptionDate today);
 
+    public double 总资产(OptionDate today) {
+        return this.account.总资产(today);
+    }
+
     public void runSimulate() {
         double d = -1;
         for (OptionDate optionDate : OptionCalendar.getInstance().getDates()) {
@@ -51,12 +58,12 @@ public abstract class BaseStrategy {
                 this.交易(optionDate);
 
                 if (optionDate.isExpirationDate()) {
-                    double 总资产 = this.account.总资产(optionDate);
+                    double 总资产 = this.总资产(optionDate);
 
                     // 将 double 值格式化为百分比字符串
                     String percentage = NumberUtil.数字转百分比(d > 0 ? (总资产 - d) / d : 0);
 
-                    System.out.println(optionDate + "\t" + this.account.总资产(optionDate) + "\t" + percentage);
+                    System.out.println(optionDate + "\t" + 总资产 + "\t" + percentage);
 
                     d = 总资产;
                 }

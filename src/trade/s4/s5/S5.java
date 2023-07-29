@@ -1,13 +1,22 @@
-package trade.s4;
+package trade.s4.s5;
 
 import t.OptionDate;
 import trade.Account;
 import trade.BaseStrategy;
 import trade.Contract;
 
-public class S4 extends BaseStrategy {
-    protected S4(double money) {
-        super(money);
+public class S5 extends BaseStrategy {
+
+    private double money;
+
+    protected S5(double money) {
+        super(money / 2);
+        this.money = money / 2;
+    }
+
+    @Override
+    public double 总资产(OptionDate today) {
+        return this.account.总资产(today) + this.money;
     }
 
     @Override
@@ -90,24 +99,66 @@ public class S4 extends BaseStrategy {
 
     @Override
     protected void 调仓(OptionDate today) {
-        double delta = this.account.delta(today.getDate());
-        double 总资产 = this.account.总资产(today) * 10000;
-
-        // 这里实验出来的结果是：尽可能的保持平衡。
-//        if (Math.abs(delta / 总资产) > 0.0000000001) {
-//            加仓(today);
-//            调仓_internal(today);
-//            a++;
-//        } else {
-//            System.out.print("");
-//            b++;
-//        }
+        调现金保留仓位(today);
 
         加仓(today);
         调仓_internal(today);
     }
 
-    int a, b;
+    private void 调现金保留仓位(OptionDate today) {
+        // 50% 仓位，没用
+//        double 总资产 = this.总资产(today);
+//        double money2add = this.money - 总资产 / 2;
+//        this.money -= money2add;
+//        super.addMoney(today, money2add);
+
+        // 10万固定仓位，没用
+//        double 期权总资产 = this.account.总资产(today);
+//        double money2add = 10 - 期权总资产;
+//        this.money -= money2add;
+//        super.addMoney(today, money2add);
+
+        // 50% 上浮到个位， 没用
+//        double 总资产 = this.总资产(today);
+//        double 期权应该的仓位 = Math.ceil(总资产 * 0.5);
+//        double money2add = this.money - (总资产 - 期权应该的仓位);
+//        this.money -= money2add;
+//        super.addMoney(today, money2add);
+
+        // 行权日
+        if (today.isExpirationDate()) {
+            // 50% 仓位
+//            double 总资产 = this.总资产(today);
+//            double money2add = this.money - 总资产 / 2;
+//            this.money -= money2add;
+//            super.addMoney(today, money2add);
+
+//             10万固定仓位，没用
+//            double 期权总资产 = this.account.总资产(today);
+//            double money2add = 10 - 期权总资产;
+//            this.money -= money2add;
+//            super.addMoney(today, money2add);
+
+            // 50% 上浮到个位， 没用
+        double 总资产 = this.总资产(today);
+        double 期权应该的仓位 = Math.ceil(总资产 * 0.5);
+        double money2add = this.money - (总资产 - 期权应该的仓位);
+        this.money -= money2add;
+        super.addMoney(today, money2add);
+
+            // 50% 上浮到个位，记录最高，后续取最高
+//            double 总资产 = this.总资产(today);
+//            double 期权应该的仓位 = Math.ceil(总资产 * 0.5);
+//            if (期权应该的仓位 > 期权仓位) {
+//                期权仓位 = 期权应该的仓位;
+//            }
+//            double money2add = this.money - (总资产 - 期权仓位);
+//            this.money -= money2add;
+//            super.addMoney(today, money2add);
+        }
+    }
+
+    private double 期权仓位 = -1;
 
     private void 调仓_internal(OptionDate today) {
         平仓一组期权(today);
@@ -120,10 +171,7 @@ public class S4 extends BaseStrategy {
     }
 
     public static void main(String[] args) {
-        var s4 = new S4(20);
+        var s4 = new S5(20);
         s4.runSimulate();
-
-        System.out.println(s4.a);
-        System.out.println(s4.b);
     }
 }
